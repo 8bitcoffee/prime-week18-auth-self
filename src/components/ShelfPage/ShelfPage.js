@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ShelfPage.css';
+import AddForm from '../AddForm/AddForm';
 
 function ShelfPage() {
   const [shelfList, setShelfList] = useState([]);
@@ -8,6 +9,19 @@ function ShelfPage() {
   useEffect(() => {
     fetchShelf();
   }, []);
+
+  const handleClick = (id) => {
+    axios.delete(`/api/shelf/${id}`)
+      .then((response) => {
+        console.log(`ID: ${id} deleted.`);
+      })
+      .catch((error) => {
+        console.error("Error in DELETE at '/api/shelf/:id", error);
+        alert("Delete unsucessful. See console.");
+      })
+    ;
+    fetchShelf();
+  }
 
   const fetchShelf = () => {
     axios.get('/api/shelf').then((response) => {
@@ -20,6 +34,7 @@ function ShelfPage() {
 
   return (
     <div className="container">
+      <AddForm fetchShelf={fetchShelf}/>
       <h2>Shelf</h2>
       <p>All of the available items can be seen here.</p>
       {
@@ -35,7 +50,7 @@ function ShelfPage() {
                         <br />
                         <div className="desc">{item.description}</div>
                         <div style={{textAlign: 'center', padding: '5px'}}>
-                          <button style={{cursor: 'pointer'}}>Delete</button>
+                          <button onClick={()=>handleClick(item.id)} style={{cursor: 'pointer'}}>Delete</button>
                         </div>
                     </div>
                  </div>
