@@ -49,6 +49,7 @@ function ShelfPage() {
                         <img src={item.image_url} alt={item.description} />
                         <br />
                         <div className="desc">{item.description}</div>
+                        <h5 style={{textAlign:"center"}}>{`Added by: ${item.username}`}</h5>
                         <div style={{textAlign: 'center', padding: '5px'}}>
                           <button onClick={()=>handleClick(item.id)} style={{cursor: 'pointer'}}>Delete</button>
                         </div>
