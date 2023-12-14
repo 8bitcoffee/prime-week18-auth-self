@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import './ShelfPage.css';
 import AddForm from '../AddForm/AddForm';
 
 function ShelfPage() {
   const [shelfList, setShelfList] = useState([]);
+  const user = useSelector(store=>store.user)
 
   useEffect(() => {
     fetchShelf();
@@ -14,6 +16,7 @@ function ShelfPage() {
     axios.delete(`/api/shelf/${id}`)
       .then((response) => {
         console.log(`ID: ${id} deleted.`);
+        fetchShelf();
       })
       .catch((error) => {
         console.error("Error in DELETE at '/api/shelf/:id", error);
@@ -51,7 +54,10 @@ function ShelfPage() {
                         <div className="desc">{item.description}</div>
                         <h5 style={{textAlign:"center"}}>{`Added by: ${item.username}`}</h5>
                         <div style={{textAlign: 'center', padding: '5px'}}>
-                          <button onClick={()=>handleClick(item.id)} style={{cursor: 'pointer'}}>Delete</button>
+                          {user.id == item.user_id ? 
+                            <button onClick={()=>handleClick(item.id)} style={{cursor: 'pointer'}}>Delete</button>:
+                            <></>
+                          }
                         </div>
                     </div>
                  </div>

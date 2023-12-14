@@ -11,6 +11,7 @@ router.get('/', (req, res) => {
       item.id AS id, 
       item.description AS description,
       item.image_url AS image_url,
+      item.user_id AS user_id,
       "user"."username" AS username
     FROM "item"
     JOIN "user" ON "user"."id" = item.user_id;`;
@@ -51,19 +52,33 @@ router.delete('/:id', (req, res) => {
   // endpoint functionality
   if (req.isAuthenticated()){
     let queryText = `
-      DELETE FROM "item"
-      WHERE "id" = $1;
+      SELECT item.user_id from "item"
+      WHERE "item"."id" = $1;
     `;
     pool.query(queryText, [req.params.id])
-      .then((response)=>{
-        res.sendStatus(201)
+      .then((response) => {
+        if (response.rows[0].id == req.user.id){
+          let queryText = `
+            DELETE FROM "item"
+            WHERE "id" = $1;
+          `;
+          pool.query(queryText, [req.params.id])
+            .then((response)=>{
+              res.sendStatus(201)
+            })
+            .catch((error) => {
+              console.error("Error in DELETE '/api/shelf/:id", error);
+            })
+          ;
+        }
+        else {
+          res.sendStatus(401)
+        }
       })
       .catch((error) => {
         console.error("Error in DELETE '/api/shelf/:id", error);
       })
-  }
-  else {
-    res.sendStatus(401);
+    ;
   }
 });
 
